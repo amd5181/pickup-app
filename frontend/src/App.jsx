@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { MdEdit, MdCancel, MdCheckCircle, MdSave } from 'react-icons/md';
 
-const API_BASE = 'https://pickup-app-backend.onrender.com'; // your backend URL
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function formatDate(dateString) {
   const parsed = new Date(dateString);
