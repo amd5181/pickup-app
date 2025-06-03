@@ -17,10 +17,22 @@ export default function App() {
   const [editData, setEditData] = useState({ name: '', date: '', newBin: null });
 
   useEffect(() => {
+    // Initial fetch
     fetch(`${API_BASE}/bins`)
       .then(res => res.json())
       .then(setBins);
+  
+    // Auto-refresh every 5 minutes (300,000 ms)
+    const interval = setInterval(() => {
+      fetch(`${API_BASE}/bins`)
+        .then(res => res.json())
+        .then(setBins);
+    }, 300000);
+  
+    // Cleanup
+    return () => clearInterval(interval);
   }, []);
+
 
   const handlePickedUp = (index) => {
     fetch(`${API_BASE}/bins/${index + 1}/clear`, { method: 'POST' })
