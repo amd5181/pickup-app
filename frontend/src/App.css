@@ -12,7 +12,7 @@ body {
 }
 
 .title {
-  font-size: 26px;
+  font-size: 48px;
   color: #ff6a00;
   margin-bottom: 10px;
   font-weight: 600;
@@ -20,7 +20,7 @@ body {
 }
 
 .subtitle {
-  font-size: 15px;
+  font-size: 26px;
   color: #666;
   text-align: center;
   margin-bottom: 24px;
