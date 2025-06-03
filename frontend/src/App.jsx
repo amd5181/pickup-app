@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { MdEdit, MdCancel, MdCheckCircle, MdSave } from 'react-icons/md';
 
-const API_BASE = 'https://vigilant-happiness-v6wp5qrg5rrpfwwx5-3001.app.github.dev'; // your backend URL
+const API_BASE = 'https://pickup-app-backend.onrender.com'; // your backend URL
 
 function formatDate(dateString) {
   const parsed = new Date(dateString);
