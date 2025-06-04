@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { MdEdit, MdCancel, MdCheckCircle, MdSave } from 'react-icons/md';
 
-const API_BASE = import.meta.env.VITE_API_BASE;
-
 function formatDate(dateString) {
   const parsed = new Date(dateString);
-  if (isNaN(parsed)) return dateString; // fallback
+  if (isNaN(parsed)) return dateString;
   return `${parsed.getMonth() + 1}/${parsed.getDate()}/${parsed.getFullYear()}`;
 }
 
@@ -17,25 +15,21 @@ export default function App() {
   const [editData, setEditData] = useState({ name: '', date: '', newBin: null });
 
   useEffect(() => {
-    // Initial fetch
-    fetch(`${API_BASE}/bins`)
+    fetch('/api/bins')
       .then(res => res.json())
       .then(setBins);
-  
-    // Auto-refresh every 5 minutes (300,000 ms)
+
     const interval = setInterval(() => {
-      fetch(`${API_BASE}/bins`)
+      fetch('/api/bins')
         .then(res => res.json())
         .then(setBins);
-    }, 300000);
-  
-    // Cleanup
+    }, 300000); // 5 min refresh
+
     return () => clearInterval(interval);
   }, []);
 
-
   const handlePickedUp = (index) => {
-    fetch(`${API_BASE}/bins/${index + 1}/clear`, { method: 'POST' })
+    fetch(`/api/clear?binNumber=${index + 1}`, { method: 'POST' })
       .then(() => {
         const newBins = [...bins];
         newBins[index] = [];
@@ -56,14 +50,15 @@ export default function App() {
 
   const handleSaveEdit = () => {
     const formatted = new Date(editData.date + 'T12:00:00').toLocaleDateString('en-US');
-  
-    fetch(`${API_BASE}/bins/${selectedBin + 1}/edit`, {
+
+    fetch('/api/edit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        oldBin: selectedBin + 1,
+        newBin: editData.newBin,
         name: editData.name,
-        date: formatted,
-        newBin: editData.newBin
+        date: formatted
       }),
     }).then(() => {
       const newBins = [...bins];
@@ -95,13 +90,13 @@ export default function App() {
     );
   };
 
-
   return (
     <div className="app">
-      <h1 className="title">📦 Equipment Pick-Up Station 📦</h1> 
+      <h1 className="title">📦 Equipment Pick-Up Station 📦</h1>
       <p className="subtitle">
         Once you receive your equipment, please select your name and mark it as picked up. Thank you!
       </p>
+
       <div className="shelf">{[...Array(15)].map((_, i) => renderBin(i))}</div>
       <div className="shelf large-row">{[...Array(3)].map((_, i) => renderBin(i + 15))}</div>
 
