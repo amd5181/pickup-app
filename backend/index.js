@@ -5,7 +5,25 @@ require('dotenv').config();
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+const allowedOrigins = [
+  'https://pickup-app-sigma.vercel.app',
+  'http://localhost:3000',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+}));
+
+app.options('*', cors()); 
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
