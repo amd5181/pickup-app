@@ -6,11 +6,25 @@ const fs = require('fs');
 
 const app = express();
 
+const allowedOrigins = [
+  'https://pickup-app-sigma.vercel.app',
+  'https://pickup-btzt64w6b-andrews-projects-7231e437.vercel.app',
+  'http://localhost:3000',
+];
+
 app.use(cors({
-  origin: 'https://pickup-app-sigma.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
+
+app.options('*', cors()); // Preflight support
 
 app.use(express.json());
 
