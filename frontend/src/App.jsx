@@ -55,22 +55,23 @@ export default function App() {
   };
 
   const handleSaveEdit = () => {
+    const formatted = new Date(editData.date + 'T12:00:00').toLocaleDateString('en-US');
+  
     fetch(`${API_BASE}/bins/${selectedBin + 1}/edit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: editData.name,
-        date: new Date(editData.date + 'T12:00:00').toLocaleDateString('en-US'),
+        date: formatted,
         newBin: editData.newBin
       }),
-
     }).then(() => {
       const newBins = [...bins];
       if (editData.newBin !== selectedBin + 1) {
         newBins[selectedBin] = [];
-        newBins[editData.newBin - 1] = [editData.name, editData.date];
+        newBins[editData.newBin - 1] = [editData.name, formatted];
       } else {
-        newBins[selectedBin] = [editData.name, editData.date];
+        newBins[selectedBin] = [editData.name, formatted];
       }
       setBins(newBins);
       setSelectedBin(null);
