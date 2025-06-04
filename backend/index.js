@@ -5,7 +5,32 @@ require('dotenv').config();
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+
+// --- START of CORS Configuration ---
+const allowedOrigins = [
+  'https://pickup-app-sigma.vercel.app',
+  // If you have a local development environment, you might add it here too:
+  // 'http://localhost:3000', // Example for local development
+  // 'http://localhost:5173', // Example for React/Vite development server
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the methods your API uses
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify any custom headers you might send
+  credentials: true // If your frontend sends cookies or authorization headers
+};
+
+app.use(cors(corsOptions));
+// --- END of CORS Configuration ---
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
