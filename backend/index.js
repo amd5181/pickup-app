@@ -3,10 +3,12 @@ const { google } = require('googleapis');
 const cors = require('cors');
 require('dotenv').config();
 const fs = require('fs');
+
 const app = express();
 
+// ✅ CORRECT CORS CONFIG
 app.use(cors({
-  origin: 'https://pickup-app-sigma.vercel.app',
+  origin: '*', // You can restrict this to your Vercel domain once tested
   methods: ['GET', 'POST'],
 }));
 
