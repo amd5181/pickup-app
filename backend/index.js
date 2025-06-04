@@ -9,9 +9,7 @@ const app = express();
 // --- START of CORS Configuration ---
 const allowedOrigins = [
   'https://pickup-app-sigma.vercel.app',
-  // If you have a local development environment, you might add it here too:
-  // 'http://localhost:3000', // Example for local development
-  // 'http://localhost:5173', // Example for React/Vite development server
+  'https://pickup-app-backend.onrender.com',
 ];
 
 const corsOptions = {
