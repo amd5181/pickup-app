@@ -7,7 +7,7 @@ const fs = require('fs');
 const app = express();
 
 app.use(cors({
-  origin: '*', // You can restrict this to your Vercel domain once tested
+  origin: '*', 
   methods: ['GET', 'POST'],
 }));
 
