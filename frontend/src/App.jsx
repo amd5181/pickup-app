@@ -48,7 +48,7 @@ export default function App() {
     const [name, date] = bins[selectedBin] || [];
     setEditData({
       name: name || '',
-      date: date || '',
+      date: date ? new Date(date).toISOString().split('T')[0] : '',
       newBin: selectedBin + 1
     });
     setIsEditing(true);
@@ -60,7 +60,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: editData.name,
-        date: formatDate(editData.date),
+        date: new Date(editData.date + 'T12:00:00').toLocaleDateString('en-US'),
         newBin: editData.newBin
       }),
 
