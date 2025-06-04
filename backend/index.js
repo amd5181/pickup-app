@@ -8,7 +8,6 @@ const app = express();
 
 const allowedOrigins = [
   'https://pickup-app-sigma.vercel.app',
-  'https://pickup-btzt64w6b-andrews-projects-7231e437.vercel.app',
   'http://localhost:3000',
 ];
 
