@@ -6,21 +6,18 @@ const fs = require('fs');
 
 const app = express();
 
-// ✅ CORS MUST COME FIRST — BEFORE any routes
 app.use(cors()); // Open for testing, restrict later if needed
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
 const SHEET_ID = process.env.SHEET_ID;
 
-// ✅ Auth client for Google Sheets
 const auth = new google.auth.GoogleAuth({
   keyFile: './credentials.json',
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 const sheets = google.sheets({ version: 'v4', auth });
 
-// ✅ Routes
 app.get('/bins', async (req, res, next) => {
   try {
     const result = await sheets.spreadsheets.values.get({
