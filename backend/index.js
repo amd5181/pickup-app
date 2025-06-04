@@ -1,63 +1,80 @@
-const express = require('express');Add commentMore actions
-const { google } = require('googleapis');Add commentMore actions
+const express = require('express');
 const { google } = require('googleapis');
 const cors = require('cors');
 require('dotenv').config();
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+
+// Render will inject this, no fallback allowed
+const PORT = process.env.PORT;
+
+// 🔒 Temporary: allow all origins (fix CORS 100%)
+app.use(cors()); 
+app.options('*', cors());
+
 app.use(express.json());
 
-const PORT = process.env.PORT;
-const SHEET_ID = process.env.SHEET_ID;
+// Logging port for safety
+console.log('Starting backend on PORT:', PORT);
 
-// Auth client from credentials.json
+// Google Sheets setup
 const auth = new google.auth.GoogleAuth({
   keyFile: './credentials.json',
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
+
 const sheets = google.sheets({ version: 'v4', auth });
+
+const SHEET_ID = process.env.SHEET_ID;
 
 // Get all bin data
 app.get('/bins', async (req, res) => {
-  const result = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range: `'Pickup App'!A2:C19`,
-  });
-  const raw = result.data.values || [];
-  const cleaned = raw.map(row => row.slice(1));  // Remove the Bin column
-  res.json(cleaned);
+  try {
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `'Pickup App'!A2:C19`,
+    });
+    const raw = result.data.values || [];
+    const cleaned = raw.map(row => row.slice(1));
+    res.json(cleaned);
+  } catch (err) {
+    console.error('GET /bins error:', err);
+    res.status(500).json({ error: 'Failed to fetch bin data' });
+  }
 });
 
-// Clear a bin (set employee + date blank)
+// Clear a bin
 app.post('/bins/:binNumber/clear', async (req, res) => {
   const bin = parseInt(req.params.binNumber);
-  const row = bin + 1; // because data starts at A2 = row 2
+  const row = bin + 1;
 
-  await sheets.spreadsheets.values.update({
-    spreadsheetId: SHEET_ID,
-    range: `'Pickup App'!B${row}:C${row}`,
-    valueInputOption: 'RAW',
-    requestBody: { values: [['', '']] },
-  });
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `'Pickup App'!B${row}:C${row}`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [['', '']] },
+    });
 
-  res.json({ success: true });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('POST /clear error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
-// Edit name/date and optionally move to new bin
+// Edit a bin
 app.post('/bins/:binNumber/edit', async (req, res) => {
   const oldBin = parseInt(req.params.binNumber);
   const { name, date, newBin } = req.body;
 
   const rowOld = oldBin + 1;
   const rowNew = newBin + 1;
-
   const sheetName = `'Pickup App'`;
 
   try {
     if (oldBin !== newBin) {
-      // Write to new bin
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
         range: `${sheetName}!B${rowNew}:C${rowNew}`,
@@ -65,7 +82,6 @@ app.post('/bins/:binNumber/edit', async (req, res) => {
         requestBody: { values: [[name, date]] },
       });
 
-      // Clear old bin
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
         range: `${sheetName}!B${rowOld}:C${rowOld}`,
@@ -73,7 +89,6 @@ app.post('/bins/:binNumber/edit', async (req, res) => {
         requestBody: { values: [['', '']] },
       });
     } else {
-      // Just update current bin
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
         range: `${sheetName}!B${rowOld}:C${rowOld}`,
@@ -84,9 +99,11 @@ app.post('/bins/:binNumber/edit', async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('POST /edit error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✅ Backend is running on port ${PORT}`);
+});
