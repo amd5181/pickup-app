@@ -98,9 +98,9 @@ export default function App() {
 
   return (
     <div className="app">
-      <h1 className="title">📦 Pickup Station 📦</h1> 
+      <h1 className="title">📦 Equipment Pick-Up Station 📦</h1> 
       <p className="subtitle">
-        Once you pick up your equipment, please select your name and mark it as picked up. Thank you!
+        Once you receive your equipment, please select your name and mark it as picked up. Thank you!
       </p>
       <div className="shelf">{[...Array(15)].map((_, i) => renderBin(i))}</div>
       <div className="shelf large-row">{[...Array(3)].map((_, i) => renderBin(i + 15))}</div>
