@@ -21,15 +21,21 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets({ version: 'v4', auth });
 
 // ✅ Routes
-app.get('/bins', async (req, res) => {
-  const result = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range: `'Pickup App'!A2:C19`,
-  });
-  const raw = result.data.values || [];
-  const cleaned = raw.map(row => row.slice(1));  // remove Bin column
-  res.json(cleaned);
+app.get('/bins', async (req, res, next) => {
+  try {
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `'Pickup App'!A2:C19`,
+    });
+    const raw = result.data.values || [];
+    const cleaned = raw.map(row => row.slice(1));  // remove Bin column
+    res.json(cleaned);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
+
 
 app.post('/bins/:binNumber/clear', async (req, res) => {
   const bin = parseInt(req.params.binNumber);
