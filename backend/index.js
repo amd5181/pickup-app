@@ -5,9 +5,12 @@ require('dotenv').config();
 const fs = require('fs');
 
 const app = express();
+const cors = require('cors');
 app.use(cors({
-  origin: 'https://pickup-app-sigma.vercel.app'
+  origin: 'https://pickup-app-sigma.vercel.app',
+  methods: ['GET', 'POST'],
 }));
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
