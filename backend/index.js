@@ -1,34 +1,11 @@
 const express = require('express');
-const { google } = require('googleapis');
+const { google } = require('googleapis');Add commentMore actions
 const cors = require('cors');
 require('dotenv').config();
 const fs = require('fs');
 
 const app = express();
-
-// --- START of CORS Configuration ---
-const allowedOrigins = [
-  'https://pickup-app-sigma.vercel.app',
-  'https://pickup-app-backend.onrender.com',
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the methods your API uses
-  allowedHeaders: ['Content-Type', 'Authorization'], // Specify any custom headers you might send
-  credentials: true // If your frontend sends cookies or authorization headers
-};
-
-app.use(cors(corsOptions));
-// --- END of CORS Configuration ---
-
+app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
