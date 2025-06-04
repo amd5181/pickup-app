@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 const SHEET_ID = process.env.SHEET_ID;
 
 // Auth client from credentials.json
