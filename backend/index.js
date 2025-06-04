@@ -6,17 +6,12 @@ const fs = require('fs');
 
 const app = express();
 
-// ✅ Safe and strict CORS config
+// ✅ CORS setup
 app.use(cors({
   origin: 'https://pickup-app-sigma.vercel.app',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
-
-// ✅ Explicitly handle CORS preflight
-app.options('/bins', cors());
-app.options('/bins/:binNumber/clear', cors());
-app.options('/bins/:binNumber/edit', cors());
 
 app.use(express.json());
 
@@ -36,10 +31,10 @@ app.get('/bins', async (req, res) => {
       range: `'Pickup App'!A2:C19`,
     });
     const raw = result.data.values || [];
-    const cleaned = raw.map(row => row.slice(1)); // Remove Bin column
+    const cleaned = raw.map(row => row.slice(1));
     res.json(cleaned);
   } catch (err) {
-    console.error(err);
+    console.error('GET /bins error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -61,26 +56,25 @@ app.post('/bins/:binNumber/edit', async (req, res) => {
   const { name, date, newBin } = req.body;
   const rowOld = oldBin + 1;
   const rowNew = newBin + 1;
-  const sheetName = `'Pickup App'`;
 
   try {
     if (oldBin !== newBin) {
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
-        range: `${sheetName}!B${rowNew}:C${rowNew}`,
+        range: `'Pickup App'!B${rowNew}:C${rowNew}`,
         valueInputOption: 'RAW',
         requestBody: { values: [[name, date]] },
       });
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
-        range: `${sheetName}!B${rowOld}:C${rowOld}`,
+        range: `'Pickup App'!B${rowOld}:C${rowOld}`,
         valueInputOption: 'RAW',
         requestBody: { values: [['', '']] },
       });
     } else {
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
-        range: `${sheetName}!B${rowOld}:C${rowOld}`,
+        range: `'Pickup App'!B${rowOld}:C${rowOld}`,
         valueInputOption: 'RAW',
         requestBody: { values: [[name, date]] },
       });
@@ -88,9 +82,11 @@ app.post('/bins/:binNumber/edit', async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('POST /bins/edit error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✅ Backend running on port ${PORT}`);
+});
