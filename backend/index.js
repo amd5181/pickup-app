@@ -6,7 +6,6 @@ const fs = require('fs');
 
 const app = express();
 
-// ✅ CORS setup
 app.use(cors({
   origin: 'https://pickup-app-sigma.vercel.app',
   methods: ['GET', 'POST'],
