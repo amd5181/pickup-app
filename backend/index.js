@@ -5,7 +5,8 @@ require('dotenv').config();
 const fs = require('fs');
 
 const app = express();
-const cors = require('cors');
+
+// ✅ CORRECT CORS SETUP
 app.use(cors({
   origin: 'https://pickup-app-sigma.vercel.app',
   methods: ['GET', 'POST'],
