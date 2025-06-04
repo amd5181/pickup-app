@@ -1,4 +1,9 @@
-2. 🛠 Add the following to vercel.json at root:
-json
-Copy
-Edit
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1.js" }
+  ]
+}
